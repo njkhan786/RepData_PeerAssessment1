@@ -47,7 +47,8 @@ To achieve the ojective of this assigment, the solution or answers to various qu
 **The questions will be in bold letters.**  
 These answers(or solutions) will be in the form of simple description, a figure, or quantative output.  
 *The descriptive answers will be in italicized letters.*  
-```{r,echo=TRUE,message=FALSE}
+
+```r
     if (packageVersion("devtools") < 1.6) {
         install.packages("devtools")
         }
@@ -62,14 +63,11 @@ These answers(or solutions) will be in the form of simple description, a figure,
     if(!require(knitr)){install.packages("knitr");library(knitr)}
     if(!require(markdown)){install.packages("markdown");library(markdown)}
 ```
-```{r setglobaloptions,echo=FALSE}
-    opts_chunk$set(echo=TRUE,fig.path="figure/")
-#    knit("PA1_template.Rmd")
-#    markdownToHTML("PA1_template.md", "PA1_template.html")
-```
+
 
 **Load and Transform the data**  
-```{r}
+
+```r
     activityfile <- read.csv("activity.csv")
     activityfile$date <- as.Date(activityfile$date)
     activityfile$typeOfDay <- as.factor(ifelse(weekdays(activityfile$date) %in% 
@@ -82,7 +80,8 @@ These answers(or solutions) will be in the form of simple description, a figure,
 **Make a histogram of the total number of steps taken each day**  
 
 *The data from activity file is grouped by each date and summarised values for total, average, and median is calculated. The histogram lable for x-axis is broken into 2 days interval*  
-```{r hitstogram1, fig.height=4,fig.width=7,dev='png'}
+
+```r
     byDay <- group_by(activityfile,date)
     byDay <- data.frame(summarise(byDay,
                               total=as.numeric(sum(steps,na.rm=TRUE)),
@@ -99,11 +98,25 @@ These answers(or solutions) will be in the form of simple description, a figure,
         theme_bw() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
+![plot of chunk hitstogram1](figure/hitstogram1-1.png) 
+
 **Calculate and report the mean and median of total numbers of steps taken per day**  
 
-```{r}
+
+```r
     mean(byDay$total)
+```
+
+```
+## [1] 9354.23
+```
+
+```r
     median(byDay$total)
+```
+
+```
+## [1] 10395
 ```
 
 **What is the average daily activiy pattern?**  
@@ -117,7 +130,8 @@ There are days when activities peaked around the end of October and November.*
 
 *The data from activity file is grouped by each time interval across all days and summarised values for total, average, and median is calculated. The lable for x-axis is broken into 2 hours interval*  
 
-```{r timeseries1, fig.height=4,fig.width=7,dev='png'}
+
+```r
     bytime <- group_by(activityfile,time)
     bytime <- summarise(bytime,
                     total=as.numeric(sum(steps,na.rm=TRUE)),
@@ -132,18 +146,28 @@ There are days when activities peaked around the end of October and November.*
         theme(legend.position="none")
 ```
 
+![plot of chunk timeseries1](figure/timeseries1-1.png) 
+
 **Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?**  
 *The time interval 835 i.e. 8:35 AM has the highest number of steps across all days.*  
 *The activity data is grouped by each interval and summarised values of total, mean, and median number of steps is calculated for each step.*
 *The interval with the maximum number of steps is reported at the bottom.*
 
-```{r}
+
+```r
         byInterval <- group_by(activityfile,interval)
         byInterval <- summarise(byInterval,total=as.numeric(sum(steps,na.rm=TRUE)),
                         average=mean(steps,na.rm=TRUE),
                         midpoint=median(steps,na.rm=TRUE))
 
         byInterval[byInterval$total==max(byInterval$total),1]
+```
+
+```
+## Source: local data frame [1 x 1]
+## 
+##   interval
+## 1      835
 ```
 
 ###Imputing data  
@@ -172,7 +196,8 @@ There are days when activities peaked around the end of October and November.*
 **Create a new dataset that is equal to the original dataset but with the missing data filled in.**  
 **Prepare list of all the totals, average, and median by each interval.
 
-```{r}
+
+```r
 # data with all the rows with the NA values
     notok <- activityfile[!complete.cases(activityfile),]
 # data with all the rows without the NA values
@@ -194,13 +219,19 @@ There are days when activities peaked around the end of October and November.*
 ```
 **Calculate and report the total number of missing values in the dataset(i.e the total number of rows with NAs)?**
 
-```{r}
+
+```r
     nrow(dt1)
+```
+
+```
+## [1] 2304
 ```
 
 **Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment?**  
 *Imputing impacted the data as overall averages became higher and number of zero activites are significantly less.*  
-```{r hitstogram2, fig.height=4,fig.width=7,dev='png'}
+
+```r
     newbyDay <- group_by(newactivityfile,date)
     newbyDay <- data.frame(summarise(newbyDay,total=as.numeric(sum(steps)),average=mean(steps),midpoint=median(steps)))
 # 
@@ -214,9 +245,23 @@ There are days when activities peaked around the end of October and November.*
         theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
-```{r}
+![plot of chunk hitstogram2](figure/hitstogram2-1.png) 
+
+
+```r
     mean(newbyDay$total)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
     median(newbyDay$total)
+```
+
+```
+## [1] 10766.19
 ```
 
 **What is the impact of imputing the data?**  
@@ -233,7 +278,8 @@ There are days when activities peaked around the end of October and November.*
 -   *During the weekdays, the activities start earlier around 6:00 AM and peak after 8:00 AM. After the peak the activites start to slow down and remain below 100 steps on the average until 8:00 PM and it starts to come to rest.*  
 
 -   *During the weekends, the activites start late around 8:00 AM and reached at it's peak twice within two hours. After that it ocillates between 150 and 50 steps until 9:00 PM. After that it slows to the rest.*  
-```{r timeseries_panels, fig.height=4,fig.width=7,dev='png'}
+
+```r
         newbytime <- group_by(newactivityfile,typeOfDay,time) 
         newbytime <- data.frame(summarise(newbytime,total=as.numeric(sum(steps)),average=mean(steps),midpoint      =median(steps)))
         ggplot(data=newbytime, aes(x=time, y=average, group=typeOfDay,color=typeOfDay)) +
@@ -246,3 +292,5 @@ There are days when activities peaked around the end of October and November.*
         theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
         theme(legend.position="none")
 ```
+
+![plot of chunk timeseries_panels](figure/timeseries_panels-1.png) 
